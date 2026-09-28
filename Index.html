@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIKOU Marketplace</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 22px 40px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header h1 {
+      font-size: 26px;
+    }
+
+    .trade-tabs {
+      display: flex;
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .trade-tab {
+      padding: 16px 30px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+    }
+
+    .trade-tab.active {
+      font-weight: bold;
+      border-bottom: 3px solid #222;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 35px auto;
+      padding: 0 25px;
+    }
+
+    .role-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .role-tab {
+      padding: 14px 28px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .role-tab.active {
+      background: #222;
+      color: white;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .panel h2 {
+      margin-bottom: 20px;
+    }
+
+    .item {
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 18px 20px;
+      }
+
+      main {
+        margin: 20px auto;
+        padding: 0 15px;
+      }
+
+      .trade-tab {
+        flex: 1;
+        padding: 14px 8px;
+      }
+
+      .role-tab {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>NIKOU Marketplace</h1>
+  </header>
+
+  <nav class="trade-tabs">
+    <button class="trade-tab active" onclick="selectTrade('domestic', this)">
+      Domestic Trade
+    </button>
+
+    <button class="trade-tab" onclick="selectTrade('foreign', this)">
+      Foreign Trade
+    </button>
+  </nav>
+
+  <main>
+
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="selectRole('seller', this)">
+        Seller
+      </button>
+
+      <button class="role-tab" onclick="selectRole('buyer', this)">
+        Buyer
+      </button>
+    </div>
+
+    <section class="panel" id="content">
+
+      <h2>Seller</h2>
+
+      <div class="item">Products & Goods</div>
+      <div class="item">Product Description</div>
+      <div class="item">Price</div>
+      <div class="item">Images / Media</div>
+      <div class="item">Specifications</div>
+      <div class="item">Contact / Buyer Request</div>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    let currentTrade = "domestic";
+
+    function selectTrade(trade, button) {
+
+      currentTrade = trade;
+
+      document.querySelectorAll(".trade-tab")
+        .forEach(tab => tab.classList.remove("active"));
+
+      button.classList.add("active");
+
+      updateContent();
+    }
+
+    function selectRole(role, button) {
+
+      document.querySelectorAll(".role-tab")
+        .forEach(tab => tab.classList.remove("active"));
+
+      button.classList.add("active");
+
+      updateContent(role);
+    }
+
+    function updateContent(role = "seller") {
+
+      const content = document.getElementById("content");
+
+      if (role === "buyer") {
+
+        content.innerHTML = `
+          <h2>Buyer</h2>
+
+          <div class="item">Request</div>
+          <div class="item">Product / Service Needed</div>
+          <div class="item">Quantity</div>
+          <div class="item">Delivery Location</div>
+          <div class="item">Required Date</div>
+          <div class="item">Matched Sellers</div>
+        `;
+
+      } else {
+
+        content.innerHTML = `
+          <h2>Seller</h2>
+
+          <div class="item">Products & Goods</div>
+          <div class="item">Product Description</div>
+          <div class="item">Price</div>
+          <div class="item">Images / Media</div>
+          <div class="item">Specifications</div>
+          <div class="item">Contact / Buyer Request</div>
+        `;
+      }
+    }
+
+  </script>
+
+</body>
+</html>
