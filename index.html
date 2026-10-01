@@ -1,223 +1,175 @@
-<!DOCTYPE html>
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NIKOU Marketplace</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6f8;
-      color: #222;
-    }
-
-    header {
-      background: #ffffff;
-      padding: 22px 40px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    header h1 {
-      font-size: 26px;
-    }
-
-    .trade-tabs {
-      display: flex;
-      background: #ffffff;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .trade-tab {
-      padding: 16px 30px;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      font-size: 16px;
-    }
-
-    .trade-tab.active {
-      font-weight: bold;
-      border-bottom: 3px solid #222;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: 35px auto;
-      padding: 0 25px;
-    }
-
-    .role-tabs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-
-    .role-tab {
-      padding: 14px 28px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: white;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    .role-tab.active {
-      background: #222;
-      color: white;
-    }
-
-    .panel {
-      background: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .panel h2 {
-      margin-bottom: 20px;
-    }
-
-    .item {
-      padding: 14px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .item:last-child {
-      border-bottom: none;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 18px 20px;
-      }
-
-      main {
-        margin: 20px auto;
-        padding: 0 15px;
-      }
-
-      .trade-tab {
-        flex: 1;
-        padding: 14px 8px;
-      }
-
-      .role-tab {
-        flex: 1;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace v0.4</title>
+<style>
+:root{--bg:#f4f6f8;--surface:#fff;--text:#17202a;--muted:#69737d;--line:#dfe4e8}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+a{font-family:inherit}
+.header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 5%;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line)}
+.logo{color:var(--text);text-decoration:none;font-size:21px;font-weight:700}
+.nav{display:flex;gap:22px;flex-wrap:wrap}
+.nav a{color:var(--muted);text-decoration:none}
+.nav a:hover{color:var(--text)}
+.container{width:min(1120px,90%);margin:auto}
+.hero{min-height:420px;display:flex;flex-direction:column;justify-content:center}
+.version{color:var(--muted);font-size:13px;letter-spacing:2px}
+.hero h1{margin:10px 0;font-size:clamp(44px,7vw,76px)}
+.hero p{color:var(--muted);font-size:18px}
+.section{padding:90px 0;border-top:1px solid var(--line)}
+.heading{margin-bottom:35px}
+.heading span{color:var(--muted);font-size:12px}
+.heading h2{margin:5px 0 8px}
+.heading p{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}
+.card,.role-card{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:24px;text-align:left;cursor:pointer;transition:.2s ease}
+.card:hover,.role-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.07)}
+.card strong,.card small{display:block}
+.card small{margin-top:7px;color:var(--muted)}
+.panel{padding:28px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.panel h3{margin-top:0}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.role-card p{color:var(--muted)}
+footer{padding:35px;text-align:center;color:var(--muted);border-top:1px solid var(--line)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-box{position:relative;width:min(520px,100%);background:#fff;border-radius:16px;padding:30px}
+.close{position:absolute;top:10px;right:14px;border:0;background:transparent;font-size:28px;cursor:pointer}
+#modalText{color:var(--muted)}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.trade-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.header{flex-direction:column;align-items:flex-start;gap:15px}.nav{gap:12px}.grid,.role-grid{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
 
-  <header>
-    <h1>NIKOU Marketplace</h1>
-  </header>
-
-  <nav class="trade-tabs">
-    <button class="trade-tab active" onclick="selectTrade('domestic', this)">
-      Domestic Trade
-    </button>
-
-    <button class="trade-tab" onclick="selectTrade('foreign', this)">
-      Foreign Trade
-    </button>
+<header class="header">
+  <a href="#home" class="logo">Marketplace</a>
+  <nav class="nav">
+    <a href="#foundation">Foundation</a>
+    <a href="#marketplace">Marketplace</a>
+    <a href="#seller">Seller</a>
+    <a href="#buyer">Buyer</a>
   </nav>
+</header>
 
-  <main>
+<main>
+<section id="home" class="hero container">
+  <span class="version">v0.4</span>
+  <h1>Marketplace</h1>
+  <p>Core marketplace architecture.</p>
+</section>
 
-    <div class="role-tabs">
-      <button class="role-tab active" onclick="selectRole('seller', this)">
-        Seller
-      </button>
+<section id="foundation" class="section">
+<div class="container">
+  <div class="heading">
+    <span>01</span>
+    <h2>Foundation</h2>
+    <p>Core infrastructure and shared capabilities.</p>
+  </div>
+  <div class="grid">
+    <button class="card" data-title="User Management" data-text="Accounts and profiles."><strong>User Management</strong><small>Accounts &amp; Profiles</small></button>
+    <button class="card" data-title="Security &amp; Access" data-text="Identity, permissions and access control."><strong>Security &amp; Access</strong><small>Identity &amp; Permissions</small></button>
+    <button class="card" data-title="Data Infrastructure" data-text="Core data and information infrastructure."><strong>Data Infrastructure</strong><small>Core Data</small></button>
+    <button class="card" data-title="Payment &amp; Finance" data-text="Payment and financial infrastructure."><strong>Payment &amp; Finance</strong><small>Financial Infrastructure</small></button>
+    <button class="card" data-title="Support &amp; Operations" data-text="Operational and support capabilities."><strong>Support &amp; Operations</strong><small>Operations</small></button>
+    <button class="card" data-title="Analytics &amp; Monitoring" data-text="Analytics and system monitoring."><strong>Analytics &amp; Monitoring</strong><small>Insights &amp; Monitoring</small></button>
+  </div>
+</div>
+</section>
 
-      <button class="role-tab" onclick="selectRole('buyer', this)">
-        Buyer
-      </button>
+<section id="marketplace" class="section">
+<div class="container">
+  <div class="heading">
+    <span>02</span>
+    <h2>Marketplace</h2>
+    <p>Main trade branches.</p>
+  </div>
+  <div class="trade-grid">
+    <div class="panel">
+      <h3>Domestic Trade</h3>
+      <p>Independent trade branch connected to shared capabilities.</p>
     </div>
+    <div class="panel">
+      <h3>Foreign Trade</h3>
+      <p>Independent international trade branch connected to shared capabilities.</p>
+    </div>
+  </div>
+</div>
+</section>
 
-    <section class="panel" id="content">
+<section id="seller" class="section">
+<div class="container">
+  <div class="heading">
+    <span>03</span>
+    <h2>Seller</h2>
+    <p>Seller role within the marketplace.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" data-title="Seller Information" data-text="Seller identity and profile information."><strong>Seller Information</strong><p>Identity and profile.</p></button>
+    <button class="role-card" data-title="Products &amp; Services" data-text="Products and services presented by the seller."><strong>Products &amp; Services</strong><p>Offerings and specifications.</p></button>
+  </div>
+</div>
+</section>
 
-      <h2>Seller</h2>
+<section id="buyer" class="section">
+<div class="container">
+  <div class="heading">
+    <span>04</span>
+    <h2>Buyer</h2>
+    <p>Buyer role within the marketplace.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" data-title="Buyer Information" data-text="Buyer identity and profile information."><strong>Buyer Information</strong><p>Identity and profile.</p></button>
+    <button class="role-card" data-title="Request / Inquiry" data-text="Buyer can submit a requirement or inquiry with the required product specifications."><strong>Request / Inquiry</strong><p>Requirement and specifications.</p></button>
+  </div>
+</div>
+</section>
+</main>
 
-      <div class="item">Products & Goods</div>
-      <div class="item">Product Description</div>
-      <div class="item">Price</div>
-      <div class="item">Images / Media</div>
-      <div class="item">Specifications</div>
-      <div class="item">Contact / Buyer Request</div>
+<footer>Marketplace v0.4</footer>
 
-    </section>
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="close" id="closeModal" aria-label="Close">&times;</button>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+  </div>
+</div>
 
-  </main>
+<script>
+const modal=document.getElementById("modal");
+const modalTitle=document.getElementById("modalTitle");
+const modalText=document.getElementById("modalText");
+const closeModal=document.getElementById("closeModal");
 
-  <script>
+document.querySelectorAll("[data-title]").forEach(card=>{
+  card.addEventListener("click",()=>{
+    modalTitle.textContent=card.dataset.title;
+    modalText.textContent=card.dataset.text;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+  });
+});
 
-    let currentTrade = "domestic";
-
-    function selectTrade(trade, button) {
-
-      currentTrade = trade;
-
-      document.querySelectorAll(".trade-tab")
-        .forEach(tab => tab.classList.remove("active"));
-
-      button.classList.add("active");
-
-      updateContent();
-    }
-
-    function selectRole(role, button) {
-
-      document.querySelectorAll(".role-tab")
-        .forEach(tab => tab.classList.remove("active"));
-
-      button.classList.add("active");
-
-      updateContent(role);
-    }
-
-    function updateContent(role = "seller") {
-
-      const content = document.getElementById("content");
-
-      if (role === "buyer") {
-
-        content.innerHTML = `
-          <h2>Buyer</h2>
-
-          <div class="item">Request</div>
-          <div class="item">Product / Service Needed</div>
-          <div class="item">Quantity</div>
-          <div class="item">Delivery Location</div>
-          <div class="item">Required Date</div>
-          <div class="item">Matched Sellers</div>
-        `;
-
-      } else {
-
-        content.innerHTML = `
-          <h2>Seller</h2>
-
-          <div class="item">Products & Goods</div>
-          <div class="item">Product Description</div>
-          <div class="item">Price</div>
-          <div class="item">Images / Media</div>
-          <div class="item">Specifications</div>
-          <div class="item">Contact / Buyer Request</div>
-        `;
-      }
-    }
-
-  console.log("NIKOU Marketplace ready");
+function closeDialog(){
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+}
+closeModal.addEventListener("click",closeDialog);
+modal.addEventListener("click",e=>{if(e.target===modal)closeDialog()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDialog()});
 </script>
-
 </body>
 </html>
+'''
+
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(path)
